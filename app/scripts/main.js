@@ -4,11 +4,11 @@ angular.module('myApp', ['ngRoute'])
 
 //Root scope
 .run(function($rootScope) {
-	$rootScope.newObjectSensorBoard = [];
+	//$rootScope.newObjectSensorBoard = [];
 })
 
 //Controllers
-.controller('sensorBoardCtrl', function ($scope){
+.controller('sensorBoardCtrl', function ($scope, $compile){
 
 	$scope.tempObjectSensorBoard = {
 		id: '',
@@ -30,6 +30,18 @@ angular.module('myApp', ['ngRoute'])
 		}
 	};
 
+	//Edit button
+	$scope.showEditModalDialog = function(fields) {
+		//console.log($scope);
+		$scope.header = 'Edit Sensor board';
+		$scope.editSB = fields;
+		var template = $compile('<div><input type="text" ng-model="editSD.title"/></div>');
+		var bodyRes = template($scope);
+		$('#myUniversalModal .modal-body').append(bodyRes);
+		$('#myUniversalModal').modal();
+	};
+
+	//Delete button
 	$scope.showDeleteModalDialog = function (fields) {
 		var currentFieldIndex = $scope.newObjectSensorBoard.indexOf(fields);
 		$scope.newObjectSensorBoard.splice(currentFieldIndex, 1);
