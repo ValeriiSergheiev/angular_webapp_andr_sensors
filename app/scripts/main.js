@@ -11,14 +11,13 @@ angular.module('myApp', ['ngRoute'])
 
 //Controllers
 .controller('sensorBoardCtrl', function ($scope, $compile, $q){
-
+	//console.log(localStorage.browserStorageData);
 	var currentFieldIndex;
+
 	var restoreLocalDataCashe = JSON.parse(localStorage.getItem('browserStorageData'));
-	
-	if (restoreLocalDataCashe != 'undefined') {
+	console.log(restoreLocalDataCashe);
+	if (localStorage.browserStorageData != undefined) {
 		$scope.newObjectSensorBoard = restoreLocalDataCashe;
-		console.log(restoreLocalDataCashe);
-		console.log('******************');
 	} else {
 		$scope.newObjectSensorBoard = [];
 	};
@@ -61,8 +60,6 @@ angular.module('myApp', ['ngRoute'])
 					desc: ''
 				};
 				localStorage.setItem('browserStorageData', JSON.stringify($scope.newObjectSensorBoard));
-				//restoreLocalDataCashe = JSON.parse(localStorage.getItem('browserStorageData'));
-				//console.log(restoreLocalDataCashe);
 				$('.preloader').fadeOut('fast');
 			}, function(reject) {
 				alert('Failed: ' + reject);
@@ -88,6 +85,7 @@ angular.module('myApp', ['ngRoute'])
 	$scope.showDeleteModalDialog = function (fields) {
 		currentFieldIndex = $scope.newObjectSensorBoard.indexOf(fields);
 		$scope.newObjectSensorBoard.splice(currentFieldIndex, 1);
+		localStorage.setItem('browserStorageData', JSON.stringify($scope.newObjectSensorBoard));
 	};
 
 	//Edit--->Ok button

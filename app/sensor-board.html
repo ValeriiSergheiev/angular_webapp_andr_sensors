@@ -10,7 +10,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="fields in newObjectSensorBoard">
+			<tr ng-repeat="fields in newObjectSensorBoard track by $index">
 				<td>{{ fields.id }}</td>
 				<td>{{ fields.title }}</td>
 				<td>{{ fields.desc }}</td>
