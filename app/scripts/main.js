@@ -4,11 +4,24 @@ angular.module('myApp', ['ngRoute'])
 
 //Root scope
 .run(function($rootScope) {
+	//<html ng-app="myApp" ng-init="newObjectSensorBoard=[]">
 	//$rootScope.newObjectSensorBoard = [];
+	//$rootScope.restoreLocalDataCashe = [];
 })
 
 //Controllers
-.controller('sensorBoardCtrl', function ($scope, $compile){
+.controller('sensorBoardCtrl', function ($scope, $compile, $q){
+
+	var currentFieldIndex;
+	var restoreLocalDataCashe = JSON.parse(localStorage.getItem('browserStorageData'));
+	
+	if (restoreLocalDataCashe != 'undefined') {
+		$scope.newObjectSensorBoard = restoreLocalDataCashe;
+		console.log(restoreLocalDataCashe);
+		console.log('******************');
+	} else {
+		$scope.newObjectSensorBoard = [];
+	};
 
 	$scope.tempObjectSensorBoard = {
 		id: '',
@@ -16,15 +29,48 @@ angular.module('myApp', ['ngRoute'])
 		desc: ''
 	};
 	
+	//Add --> Ok button
 	$scope.addNewObject = function() {
-		if ($scope.tempObjectSensorBoard.id != '' || $scope.tempObjectSensorBoard.title != '' || $scope.tempObjectSensorBoard.desc != '') {
-			$scope.newObjectSensorBoard.push($scope.tempObjectSensorBoard);
-			$scope.tempObjectSensorBoard = {
-				id: '',
-				title: '',
-				desc: ''
-			};
+		if ($scope.tempObjectSensorBoard.title != '' || $scope.tempObjectSensorBoard.desc != '') {
+			//Promise
+			function asyncPreloader(name) {
+				return $q(function(resolve, reject) {
+					setTimeout(function() {
+						if (true) {
+							resolve('test');
+						} else {
+							reject(name + ' is not allowed.');
+						}
+					}, 2000);
+				});
+			}
+
+			var promise = asyncPreloader('Test preloader');
+			promise.then(function(resolve) {
+				$scope.newObjectSensorBoard.push($scope.tempObjectSensorBoard);
+				let index = $scope.newObjectSensorBoard.findIndex(element => element.id === $scope.tempObjectSensorBoard.id);
+				let indexPrev = index - 1;
+				if (index != 0 && index <= $scope.newObjectSensorBoard[indexPrev].id) {
+					$scope.newObjectSensorBoard[index].id = $scope.newObjectSensorBoard[indexPrev].id + 1;
+				} else {
+					$scope.newObjectSensorBoard[index].id = index +1;
+				}
+				$scope.tempObjectSensorBoard = {
+					id: '',
+					title: '',
+					desc: ''
+				};
+				localStorage.setItem('browserStorageData', JSON.stringify($scope.newObjectSensorBoard));
+				//restoreLocalDataCashe = JSON.parse(localStorage.getItem('browserStorageData'));
+				//console.log(restoreLocalDataCashe);
+				$('.preloader').fadeOut('fast');
+			}, function(reject) {
+				alert('Failed: ' + reject);
+				$('.preloader').fadeOut('fast');
+			});
+			//End Promise
 			$('.modal').modal('hide');
+			$('.preloader').fadeIn('fast');
 		} else {
 			alert('Fill in the fields!');
 		}
@@ -32,19 +78,30 @@ angular.module('myApp', ['ngRoute'])
 
 	//Edit button
 	$scope.showEditModalDialog = function(fields) {
-		//console.log($scope);
 		$scope.header = 'Edit Sensor board';
-		$scope.editSB = fields;
-		var template = $compile('<div><input type="text" ng-model="editSD.title"/></div>');
-		var bodyRes = template($scope);
-		$('#myUniversalModal .modal-body').append(bodyRes);
+		$scope.editField = angular.copy(fields);
+		currentFieldIndex = $scope.newObjectSensorBoard.indexOf(fields);
 		$('#myUniversalModal').modal();
 	};
 
 	//Delete button
 	$scope.showDeleteModalDialog = function (fields) {
-		var currentFieldIndex = $scope.newObjectSensorBoard.indexOf(fields);
+		currentFieldIndex = $scope.newObjectSensorBoard.indexOf(fields);
 		$scope.newObjectSensorBoard.splice(currentFieldIndex, 1);
+	};
+
+	//Edit--->Ok button
+	$scope.editModalDialog = () => {
+		//var index = $scope.newObjectSensorBoard.findIndex(item => item.id === $scope.editField.id)
+		//$scope.newObjectSensorBoard[index].title = $scope.editField.title
+		$scope.newObjectSensorBoard[currentFieldIndex].title = $scope.editField.title;
+		$scope.newObjectSensorBoard[currentFieldIndex].desc = $scope.editField.desc;
+		$('#myUniversalModal').modal('hide');
+	}
+
+	//Clear local storage button
+	$scope.restoreLocalStorage = () => {
+		localStorage.removeItem('browserStorageData');
 	};
 
 })
@@ -59,6 +116,19 @@ angular.module('myApp', ['ngRoute'])
 
 .controller('devicesCtrl', function ($scope){
 	$scope.msg = 'Devices!!!';
+})
+
+//Directives
+.directive('editTitle', function() {
+	return {
+		template : '<input type="text" ng-model="editField.title"/>'
+	};
+})
+
+.directive('editDesc', function() {
+	return {
+		template : '<input type="text" ng-model="editField.desc"/>'
+	};
 })
 
 //Routing

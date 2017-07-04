@@ -1,4 +1,4 @@
-<div ng-controller="sensorBoardCtrl">
+<div ng-controller="sensorBoardCtrl" ng-init="newObjectSensorBoardTest=[]">
 	
 	<table class="table table-striped">
 		<thead>
@@ -34,10 +34,10 @@
 				</div>
 				<div class="modal-body">
 					<form>
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<label for="sensor-board-id" class="control-label">ID:</label>
 							<input type="number" class="form-control" id="sensor-board-id" ng-model="tempObjectSensorBoard.id">
-						</div>
+						</div> -->
 						<div class="form-group">
 							<label for="sensor-board-title" class="control-label">Title:</label>
 							<input type="text" class="form-control" id="sensor-board-title" ng-model="tempObjectSensorBoard.title">
@@ -60,13 +60,19 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4>{{ header }}</h4>
 				</div>
-				<div class="modal-body"></div>
-				<div class="modal-footer"></div>
+				<div class="modal-body">
+					<edit-title></edit-title>
+					<edit-desc></edit-desc>
+				</div>
+				<div class="modal-footer">
+					<button ng-click="editModalDialog()" type="button" class="btn btn-warning" data-dismiss="modal"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Ok</button>
+				</div>
 			</div>
 		</div>
 	</div>
 	<!-- End Edit modal -->
-
+	<button class="btn btn-storage btn-info" ng-click="restoreLocalStorage()">Clear local storage</button>
 </div>
